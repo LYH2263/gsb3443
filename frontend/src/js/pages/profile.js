@@ -1,4 +1,5 @@
 let profileTab = 'info';
+let browseHistoryList = [];
 
 function renderProfilePage() {
     const user = getUser();
@@ -26,10 +27,76 @@ function renderProfilePage() {
                         ${profileTab === 'info' ? renderProfileInfoTab(user) : renderProfilePasswordTab()}
                     </div>
                 </div>
+                <div id="browse-history-section" class="browse-history-section" style="display:none">
+                    <div class="browse-history-card">
+                        <div class="browse-history-header">
+                            <h3>我的浏览记录</h3>
+                        </div>
+                        <div class="browse-history-list" id="browse-history-list">
+                        </div>
+                    </div>
+                </div>
             </div>
             ${renderFooter()}
         </div>
     `;
+}
+
+async function loadBrowseHistories() {
+    try {
+        const res = await api.user.browseHistories();
+        browseHistoryList = res.data.list || [];
+        renderBrowseHistoryList();
+    } catch (e) {}
+}
+
+function renderBrowseHistoryList() {
+    const section = document.getElementById('browse-history-section');
+    const listEl = document.getElementById('browse-history-list');
+    if (!section || !listEl) return;
+
+    if (browseHistoryList.length === 0) {
+        section.style.display = 'none';
+        return;
+    }
+
+    section.style.display = 'block';
+    listEl.innerHTML = browseHistoryList.map(item => {
+        const album = item.album || {};
+        const coverUrl = album.cover_image_url ? getImageUrl(album.cover_image_url) : '';
+        const browseTime = formatBrowseTime(item.browse_at);
+        return `
+            <div class="browse-history-item" onclick="window.location.hash='#/viewer/${album.id}'">
+                <div class="browse-history-cover">
+                    ${coverUrl ? `<img src="${coverUrl}" alt="${escapeHtml(album.title || '')}" loading="lazy">` : '<div class="browse-history-cover-placeholder">&#128214;</div>'}
+                </div>
+                <div class="browse-history-info">
+                    <div class="browse-history-title" title="${escapeHtml(album.title || '')}">${escapeHtml(album.title || '未命名画册')}</div>
+                    <div class="browse-history-time">${browseTime}</div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function formatBrowseTime(timeStr) {
+    if (!timeStr) return '';
+    const date = new Date(timeStr.replace(/-/g, '/'));
+    const now = new Date();
+    const diff = now - date;
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
+
+    if (minutes < 1) return '刚刚';
+    if (minutes < 60) return `${minutes}分钟前`;
+    if (hours < 24) return `${hours}小时前`;
+    if (days < 7) return `${days}天前`;
+    return timeStr.slice(0, 10);
+}
+
+async function initProfilePage() {
+    loadBrowseHistories();
 }
 
 function switchProfileTab(tab) {

@@ -163,5 +163,9 @@ const api = {
             return apiRequest('/upload/image', { method: 'POST', body: formData, headers: {} });
         },
     },
+    user: {
+        recordBrowse: (albumId) => apiRequest('/user/browse', { method: 'POST', body: { album_id: albumId } }),
+        browseHistories: () => apiRequest('/user/browse-histories'),
+    },
     init: () => apiRequest('/init'),
 };
