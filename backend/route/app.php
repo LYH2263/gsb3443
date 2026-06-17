@@ -26,6 +26,12 @@ Route::group('api/auth', function () {
     Route::put('password', 'AuthController@changePassword');
 })->prefix('app\\controller\\')->middleware([\app\middleware\CorsMiddleware::class, \app\middleware\AuthMiddleware::class]);
 
+// Browse history routes (require login)
+Route::group('api/browse-history', function () {
+    Route::post('record', 'BrowseHistoryController@record');
+    Route::get('list', 'BrowseHistoryController@list');
+})->prefix('app\\controller\\')->middleware([\app\middleware\CorsMiddleware::class, \app\middleware\AuthMiddleware::class]);
+
 // Public routes (no auth required, but auth optional for level check)
 Route::group('api/public', function () {
     Route::get('albums/:id', 'AlbumController@publicDetail')->pattern(['id' => '\d+']);
