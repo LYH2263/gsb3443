@@ -108,6 +108,18 @@ CREATE TABLE IF NOT EXISTS `access_logs` (
   KEY `idx_user` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='访问日志表';
 
+-- 用户浏览记录表
+CREATE TABLE IF NOT EXISTS `browse_records` (
+  `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `user_id` INT UNSIGNED NOT NULL COMMENT '用户ID',
+  `album_id` INT UNSIGNED NOT NULL COMMENT '画册ID',
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '浏览时间',
+  UNIQUE KEY `uk_user_album` (`user_id`, `album_id`),
+  KEY `idx_user` (`user_id`),
+  KEY `idx_album` (`album_id`),
+  KEY `idx_created_at` (`created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='用户浏览记录表';
+
 -- 初始化会员等级
 INSERT INTO `member_levels` (`id`, `name`, `level`, `description`) VALUES
 (1, '普通会员', 0, '注册即为普通会员，可浏览公开画册'),

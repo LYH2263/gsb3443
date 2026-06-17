@@ -24,6 +24,8 @@ Route::group('api/auth', function () {
     Route::get('profile', 'AuthController@profile');
     Route::put('profile', 'AuthController@updateProfile');
     Route::put('password', 'AuthController@changePassword');
+    Route::post('browse', 'AuthController@addBrowseRecord');
+    Route::get('browse-records', 'AuthController@getBrowseRecords');
 })->prefix('app\\controller\\')->middleware([\app\middleware\CorsMiddleware::class, \app\middleware\AuthMiddleware::class]);
 
 // Public routes (no auth required, but auth optional for level check)
