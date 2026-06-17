@@ -1,4 +1,5 @@
 let profileTab = 'info';
+let profileBrowseRecords = [];
 
 function renderProfilePage() {
     const user = getUser();
@@ -7,6 +8,8 @@ function renderProfilePage() {
     const avatarContent = user.avatar
         ? `<img src="${getImageUrl(user.avatar)}" alt="">`
         : escapeHtml((user.nickname || user.username || 'U').charAt(0).toUpperCase());
+
+    const browseSection = profileBrowseRecords.length > 0 ? renderBrowseRecordsSection() : '';
 
     return `
         <div class="profile-page">
@@ -26,10 +29,59 @@ function renderProfilePage() {
                         ${profileTab === 'info' ? renderProfileInfoTab(user) : renderProfilePasswordTab()}
                     </div>
                 </div>
+                ${browseSection}
             </div>
             ${renderFooter()}
         </div>
     `;
+}
+
+function renderBrowseRecordsSection() {
+    let cardsHtml = '';
+    profileBrowseRecords.forEach(record => {
+        const coverUrl = record.cover_image_url ? getImageUrl(record.cover_image_url) : getPlaceholderImage();
+        cardsHtml += `
+            <div class="browse-card" onclick="window.location.hash='#/viewer/${record.album_id}'">
+                <div class="browse-card-image">
+                    <img src="${coverUrl}" alt="${escapeHtml(record.title)}" onerror="this.src='${getPlaceholderImage()}'">
+                </div>
+                <div class="browse-card-body">
+                    <div class="browse-card-title">${escapeHtml(record.title)}</div>
+                    <div class="browse-card-time">&#128345; ${formatDateTime(record.browse_time)}</div>
+                </div>
+            </div>
+        `;
+    });
+
+    return `
+        <div class="browse-section">
+            <div class="browse-section-header">
+                <h3>我的浏览记录</h3>
+                <span class="browse-section-count">最近 ${profileBrowseRecords.length} 本</span>
+            </div>
+            <div class="browse-cards-wrapper">
+                <div class="browse-cards-scroll">
+                    ${cardsHtml}
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+async function initProfilePage() {
+    try {
+        const res = await api.auth.getBrowseRecords();
+        profileBrowseRecords = res.data || [];
+        const container = document.querySelector('.profile-container');
+        if (container && profileBrowseRecords.length > 0) {
+            const browseSection = document.querySelector('.browse-section');
+            if (!browseSection) {
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = renderBrowseRecordsSection();
+                container.appendChild(tempDiv.firstElementChild);
+            }
+        }
+    } catch (e) {}
 }
 
 function switchProfileTab(tab) {

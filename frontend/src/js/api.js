@@ -114,6 +114,8 @@ const api = {
         profile: () => apiRequest('/auth/profile'),
         updateProfile: (data) => apiRequest('/auth/profile', { method: 'PUT', body: data }),
         changePassword: (data) => apiRequest('/auth/password', { method: 'PUT', body: data }),
+        addBrowseRecord: (albumId) => apiRequest('/auth/browse', { method: 'POST', body: { album_id: albumId } }),
+        getBrowseRecords: () => apiRequest('/auth/browse-records'),
     },
     public: {
         albums: (params) => apiRequest('/public/albums?' + new URLSearchParams(params)),

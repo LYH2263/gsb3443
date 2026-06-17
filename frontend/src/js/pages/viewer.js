@@ -107,6 +107,10 @@ function setupViewer(data) {
     setTimeout(() => {
         initFlipbook();
     }, 100);
+
+    if (isLoggedIn()) {
+        api.auth.addBrowseRecord(data.album.id).catch(() => {});
+    }
 }
 
 function initFlipbook() {

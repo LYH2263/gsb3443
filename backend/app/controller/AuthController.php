@@ -4,6 +4,8 @@ namespace app\controller;
 
 use app\model\User;
 use app\model\MemberLevel;
+use app\model\BrowseRecord;
+use app\model\Album;
 use think\facade\Log;
 use think\facade\Validate;
 use think\Request;
@@ -260,5 +262,60 @@ class AuthController
         Log::info("用户修改密码: {$user->username} (ID: {$user->id})");
 
         return json_success([], '密码修改成功');
+    }
+
+    public function addBrowseRecord(Request $request)
+    {
+        $data = getRequestData($request);
+        $albumId = $data['album_id'] ?? 0;
+
+        if (empty($albumId)) {
+            return json_error('画册ID不能为空');
+        }
+
+        $album = Album::find($albumId);
+        if (!$album || $album->status !== 1) {
+            return json_error('画册不存在或未发布');
+        }
+
+        $userId = $request->uid;
+
+        $record = BrowseRecord::where('user_id', $userId)
+            ->where('album_id', $albumId)
+            ->find();
+
+        if ($record) {
+            $record->created_at = date('Y-m-d H:i:s');
+            $record->save();
+        } else {
+            BrowseRecord::create([
+                'user_id'    => $userId,
+                'album_id'   => $albumId,
+                'created_at' => date('Y-m-d H:i:s'),
+            ]);
+        }
+
+        return json_success([], '记录成功');
+    }
+
+    public function getBrowseRecords(Request $request)
+    {
+        $userId = $request->uid;
+
+        $list = BrowseRecord::alias('br')
+            ->join('albums a', 'br.album_id = a.id')
+            ->where('br.user_id', $userId)
+            ->where('a.status', 1)
+            ->field('br.album_id, br.created_at as browse_time, a.title, a.cover_image')
+            ->order('br.created_at', 'desc')
+            ->limit(10)
+            ->select()
+            ->each(function ($item) {
+                $item->cover_image_url = $item->cover_image ? get_upload_url($item->cover_image) : '';
+                unset($item->cover_image);
+                return $item;
+            });
+
+        return json_success($list);
     }
 }
