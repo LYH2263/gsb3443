@@ -82,6 +82,10 @@ function setupViewer(data) {
         document.getElementById('viewer-bg').style.backgroundImage = `url(${getImageUrl(data.album.background_image_url)})`;
     }
 
+    if (isLoggedIn() && data.album.id) {
+        api.browseHistory.record(data.album.id).catch(() => {});
+    }
+
     if (viewerState.pages.length === 0) {
         document.getElementById('flipbook-wrapper').innerHTML = renderEmpty('该画册暂无页面内容');
         return;

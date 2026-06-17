@@ -1,4 +1,5 @@
 let profileTab = 'info';
+let profileBrowseHistory = [];
 
 function renderProfilePage() {
     const user = getUser();
@@ -18,6 +19,7 @@ function renderProfilePage() {
                         <h2 id="profile-nickname-display">${escapeHtml(user.nickname || user.username)}</h2>
                         <p>${escapeHtml(user.member_level ? user.member_level.name : '普通会员')}</p>
                     </div>
+                    <div id="profile-browse-history"></div>
                     <div class="profile-tabs">
                         <button class="profile-tab ${profileTab === 'info' ? 'active' : ''}" onclick="switchProfileTab('info')">个人信息</button>
                         <button class="profile-tab ${profileTab === 'password' ? 'active' : ''}" onclick="switchProfileTab('password')">修改密码</button>
@@ -30,6 +32,53 @@ function renderProfilePage() {
             ${renderFooter()}
         </div>
     `;
+}
+
+async function initProfilePage() {
+    try {
+        const res = await api.browseHistory.list();
+        profileBrowseHistory = res.data || [];
+    } catch (e) {
+        profileBrowseHistory = [];
+    }
+    renderBrowseHistorySection();
+}
+
+function renderBrowseHistorySection() {
+    const container = document.getElementById('profile-browse-history');
+    if (!container) return;
+
+    if (!profileBrowseHistory || profileBrowseHistory.length === 0) {
+        container.innerHTML = '';
+        return;
+    }
+
+    let html = `
+        <div class="profile-browse-history">
+            <div class="profile-browse-history-header">
+                <h3>&#128065; 我的浏览记录</h3>
+            </div>
+            <div class="profile-browse-history-scroll">
+    `;
+
+    profileBrowseHistory.forEach(item => {
+        const coverUrl = item.cover_image_url ? getImageUrl(item.cover_image_url) : getPlaceholderImage();
+        html += `
+            <div class="profile-browse-history-card" onclick="viewAlbum(${item.album_id})">
+                <div class="profile-browse-history-card-image">
+                    <img src="${coverUrl}" alt="${escapeHtml(item.title)}" onerror="this.src='${getPlaceholderImage()}'">
+                </div>
+                <div class="profile-browse-history-card-title">${escapeHtml(item.title)}</div>
+            </div>
+        `;
+    });
+
+    html += `
+            </div>
+        </div>
+    `;
+
+    container.innerHTML = html;
 }
 
 function switchProfileTab(tab) {

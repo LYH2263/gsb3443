@@ -96,6 +96,17 @@ CREATE TABLE IF NOT EXISTS `background_images` (
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='背景图片库';
 
+-- 浏览记录表
+CREATE TABLE IF NOT EXISTS `browse_histories` (
+  `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `user_id` INT UNSIGNED NOT NULL COMMENT '用户ID',
+  `album_id` INT UNSIGNED NOT NULL COMMENT '画册ID',
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `uk_user_album` (`user_id`, `album_id`),
+  KEY `idx_user_updated` (`user_id`, `updated_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='浏览记录表';
+
 -- 访问日志表
 CREATE TABLE IF NOT EXISTS `access_logs` (
   `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
