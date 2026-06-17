@@ -523,6 +523,62 @@ input:-webkit-autofill:focus {
 .profile-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
 .profile-form { padding: 24px; }
 
+.browse-history-section { margin-top: 24px; }
+.browse-history-card {
+    background: var(--white); border-radius: var(--radius-lg);
+    box-shadow: var(--shadow); overflow: hidden;
+}
+.browse-history-header {
+    padding: 20px 24px; border-bottom: 1px solid var(--gray-200);
+    display: flex; align-items: center; justify-content: space-between;
+}
+.browse-history-header h3 {
+    font-size: 16px; font-weight: 600; color: var(--gray-900);
+}
+.browse-history-list {
+    display: flex; gap: 16px; padding: 20px 24px;
+    overflow-x: auto; scroll-behavior: smooth;
+}
+.browse-history-list::-webkit-scrollbar { height: 6px; }
+.browse-history-list::-webkit-scrollbar-track {
+    background: var(--gray-100); border-radius: 3px;
+}
+.browse-history-list::-webkit-scrollbar-thumb {
+    background: var(--gray-300); border-radius: 3px;
+}
+.browse-history-list::-webkit-scrollbar-thumb:hover { background: var(--gray-400); }
+
+.browse-history-item {
+    flex-shrink: 0; width: 160px; cursor: pointer;
+    transition: var(--transition);
+}
+.browse-history-item:hover { transform: translateY(-2px); }
+.browse-history-item:hover .browse-history-title { color: var(--primary); }
+
+.browse-history-cover {
+    width: 100%; height: 200px; border-radius: var(--radius);
+    overflow: hidden; background: linear-gradient(135deg, var(--gray-200), var(--gray-100));
+    margin-bottom: 10px; position: relative;
+}
+.browse-history-cover img {
+    width: 100%; height: 100%; object-fit: cover;
+}
+.browse-history-cover-placeholder {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 40px; color: var(--gray-400);
+}
+
+.browse-history-info { padding: 0 2px; }
+.browse-history-title {
+    font-size: 14px; font-weight: 500; color: var(--gray-900);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    transition: var(--transition); margin-bottom: 4px;
+}
+.browse-history-time {
+    font-size: 12px; color: var(--gray-400);
+}
+
 /* ==================== Admin Layout ==================== */
 .admin-layout { display: flex; min-height: 100vh; }
 .admin-sidebar {

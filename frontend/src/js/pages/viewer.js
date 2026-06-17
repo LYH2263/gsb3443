@@ -78,6 +78,10 @@ function setupViewer(data) {
     document.getElementById('viewer-title').textContent = data.album.title || '画册';
     document.getElementById('viewer-loading').style.display = 'none';
 
+    if (isLoggedIn() && data.album && data.album.id) {
+        api.user.recordBrowse(data.album.id).catch(() => {});
+    }
+
     if (data.album.background_image_url) {
         document.getElementById('viewer-bg').style.backgroundImage = `url(${getImageUrl(data.album.background_image_url)})`;
     }
