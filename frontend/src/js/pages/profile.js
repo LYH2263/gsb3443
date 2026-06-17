@@ -1,4 +1,5 @@
 let profileTab = 'info';
+let profileBrowseHistory = [];
 
 function renderProfilePage() {
     const user = getUser();
@@ -24,6 +25,18 @@ function renderProfilePage() {
                     </div>
                     <div id="profile-tab-content">
                         ${profileTab === 'info' ? renderProfileInfoTab(user) : renderProfilePasswordTab()}
+                    </div>
+                </div>
+                <div id="browse-history-section" style="display:none">
+                    <div class="browse-history-card">
+                        <div class="card-header">
+                            <h2>&#128214; 我的浏览记录</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="browse-history-list" id="browse-history-list">
+                                ${renderLoading()}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -196,4 +209,72 @@ async function handleChangePassword(event) {
         btn.disabled = false;
         btn.textContent = '修改密码';
     }
+}
+
+async function initProfilePage() {
+    loadBrowseHistory();
+}
+
+async function loadBrowseHistory() {
+    try {
+        const res = await api.auth.browseHistory();
+        profileBrowseHistory = res.data.list || [];
+
+        const section = document.getElementById('browse-history-section');
+        const listEl = document.getElementById('browse-history-list');
+
+        if (!section || !listEl) return;
+
+        if (profileBrowseHistory.length === 0) {
+            section.style.display = 'none';
+            return;
+        }
+
+        section.style.display = 'block';
+        listEl.innerHTML = renderBrowseHistoryCards(profileBrowseHistory);
+    } catch (e) {
+        const section = document.getElementById('browse-history-section');
+        if (section) section.style.display = 'none';
+    }
+}
+
+function renderBrowseHistoryCards(list) {
+    if (!list || list.length === 0) return '';
+
+    let html = '';
+    list.forEach(item => {
+        const coverUrl = item.cover_image_url
+            ? getImageUrl(item.cover_image_url)
+            : getPlaceholderImage();
+
+        html += `
+            <div class="browse-history-card-item" onclick="viewAlbum(${item.album_id})">
+                <div class="browse-history-card-image">
+                    <img src="${coverUrl}" alt="${escapeHtml(item.album_title)}" onerror="this.src='${getPlaceholderImage()}'">
+                </div>
+                <div class="browse-history-card-info">
+                    <div class="browse-history-card-title">${escapeHtml(item.album_title)}</div>
+                    <div class="browse-history-card-time">${formatBrowseTime(item.browse_time)}</div>
+                </div>
+            </div>
+        `;
+    });
+
+    return html;
+}
+
+function formatBrowseTime(timeStr) {
+    if (!timeStr) return '';
+    const date = new Date(timeStr.replace(/-/g, '/'));
+    const now = new Date();
+    const diff = now - date;
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
+
+    if (minutes < 1) return '刚刚';
+    if (minutes < 60) return `${minutes}分钟前`;
+    if (hours < 24) return `${hours}小时前`;
+    if (days < 7) return `${days}天前`;
+    return timeStr.slice(0, 10);
 }

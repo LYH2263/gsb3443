@@ -523,6 +523,71 @@ input:-webkit-autofill:focus {
 .profile-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
 .profile-form { padding: 24px; }
 
+.browse-history-card {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    margin-top: 24px;
+}
+.browse-history-list {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scroll-behavior: smooth;
+}
+.browse-history-list::-webkit-scrollbar {
+    height: 6px;
+}
+.browse-history-list::-webkit-scrollbar-thumb {
+    background: var(--gray-300);
+    border-radius: 3px;
+}
+.browse-history-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+.browse-history-card-item {
+    flex-shrink: 0;
+    width: 160px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--gray-50);
+}
+.browse-history-card-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+.browse-history-card-image {
+    width: 100%;
+    height: 110px;
+    overflow: hidden;
+    background: var(--gray-200);
+}
+.browse-history-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.browse-history-card-info {
+    padding: 10px 12px;
+}
+.browse-history-card-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-900);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 4px;
+}
+.browse-history-card-time {
+    font-size: 11px;
+    color: var(--gray-500);
+}
+
 /* ==================== Admin Layout ==================== */
 .admin-layout { display: flex; min-height: 100vh; }
 .admin-sidebar {
